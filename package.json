@@ -11,8 +11,12 @@
   "dependencies": {
     "expo": "~53.0.22",
     "expo-status-bar": "~2.2.3",
+    "formik": "^2.4.6",
     "react": "19.0.0",
-    "react-native": "0.79.6"
+    "react-hook-form": "^7.62.0",
+    "react-native": "0.79.6",
+    "react-native-safe-area-context": "^5.6.1",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
