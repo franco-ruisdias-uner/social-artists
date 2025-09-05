@@ -1,18 +1,16 @@
 import {View, StyleSheet, Text, TextInput, TouchableOpacity, Pressable, Platform} from "react-native";
-import {colors, sizes} from "../../utils";
+import {sizes} from "../../../utils";
 import {useEffect, useState} from "react";
-import Button from "../../components/Button";
-import Link from "../../components/Link";
-import {materialColors} from "../../utils/colors";
+import Button from "../../../components/Button";
+import Link from "../../../components/Link";
+import {materialColors} from "../../../utils/colors";
+import {useNavigation} from "@react-navigation/native";
+import {AUTH_ROUTES} from "../../../utils/constants";
 
 
-interface IProps {
-  onRegisterClicked: () => void
-}
-
-
-export default function Login(props: IProps) {
-  const {onRegisterClicked} = props
+export default function Login() {
+  // const {onRegisterClicked} = props
+  const navigation = useNavigation()
   const [email, setEmail] = useState<string | undefined>(undefined)
   const [pass, setPass] = useState<string | undefined>(undefined)
   const [error, setError] = useState<string | undefined>(undefined)
@@ -28,6 +26,11 @@ export default function Login(props: IProps) {
     }
 
     console.log(email, pass)
+  }
+
+  const handleGoToRegister = () =>{
+
+    navigation.navigate(AUTH_ROUTES.REGISTER, {'name': 'register'})
   }
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function Login(props: IProps) {
         <View style={styles.divider}/>
         <Button onPress={handleLogin} disabled={!isEnabled} title="Iniciar Sesion!"/>
         <View style={styles.divider}/>
-        <Link link="Registrarse!" onPress={onRegisterClicked}/>
+        <Link link="Registrarse!" onPress={handleGoToRegister}/>
       </View>
   )
 }

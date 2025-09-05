@@ -1,28 +1,27 @@
-import {SafeAreaView, StyleSheet} from "react-native";
-import Login from "./Login";
-import {useState} from "react";
-import Register from "./Register";
-import {materialColors} from "../../utils/colors";
-import RegisterHooks from "./Register-hooks";
+import Login from "./screens/Login";
+import Register from "./screens/Register";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {AUTH_ROUTES} from "../../utils/constants";
+const Stack = createNativeStackNavigator()
 
 
-export default function Auth() {
+export default function AuthStackScreen() {
 
-  const [showRegister, setShowRegister] = useState<boolean>(false)
 
   return (
-      <SafeAreaView style={styles.container}>
-        {
-          showRegister ? <RegisterHooks onLoginClicked={() => setShowRegister(false)}/> :
-              <Login onRegisterClicked={() => setShowRegister(true)}/>
-        }
-      </SafeAreaView>
+      <Stack.Navigator initialRouteName={AUTH_ROUTES.LOGIN} screenOptions={{ headerShown: false }}>
+        <Stack.Screen name={AUTH_ROUTES.LOGIN} component={Login}
+                      options={{
+                        title: 'Iniciar Sesión'
+                      }}
+        />
+        <Stack.Screen name={AUTH_ROUTES.REGISTER} component={Register}
+                      options={{
+                        title: 'Registro',
+                        headerBackVisible: false,
+                        headerBackTitle: 'Volver'
+                      }}
+        />
+      </Stack.Navigator>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: materialColors.schemes.light.surface,
-  },
-})

@@ -1,15 +1,13 @@
 import {View, Text, TextInput, TouchableOpacity, StyleSheet} from "react-native";
-import {useState} from "react";
-import Link from "../../components/Link";
-import Button from "../../components/Button";
-import {sizes} from "../../utils";
-import {materialColors} from "../../utils/colors";
+import {useEffect, useState} from "react";
+import Link from "../../../components/Link";
+import Button from "../../../components/Button";
+import {sizes} from "../../../utils";
+import {materialColors} from "../../../utils/colors";
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-
-interface IProps {
-  onLoginClicked: () => void
-}
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {AUTH_ROUTES} from "../../../utils/constants";
 
 interface IFormValues {
   nombre: string
@@ -24,13 +22,18 @@ const FormValidationSchema = Yup.object().shape({
   email: Yup.string().email('Email no tiene la forma adecuada').required('Email es requerido'),
   pass: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('Contraseña es requerida')
 })
-export default function Register(props: IProps) {
-  const {onLoginClicked} = props
+export default function Register() {
+  const navigation = useNavigation()
+  const route = useRoute()
   const [showPass, setShowPass] = useState<boolean>(false)
 
   const handleRegister = (values: IFormValues) => {
     console.log(values)
   }
+
+  useEffect(() => {
+    console.log(route.params)
+  }, [route]);
 
   return (
       <Formik initialValues={{nombre: '', apellido: '', email: '', pass: ''}}
@@ -78,7 +81,7 @@ export default function Register(props: IProps) {
               <View style={styles.divider}/>
               <Button onPress={handleSubmit} disabled={!isValid} title="Registrarse!"/>
               <View style={styles.divider}/>
-              <Link link="Volver al login!" onPress={onLoginClicked}/>
+              <Link link="Volver al login!" onPress={() => navigation.goBack()}/>
             </View>
         )}
       </Formik>
