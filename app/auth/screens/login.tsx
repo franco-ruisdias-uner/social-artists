@@ -1,15 +1,18 @@
-import {View, StyleSheet, Text, TextInput, TouchableOpacity, Pressable, Platform} from "react-native";
-import {sizes} from "../../../utils";
-import {useEffect, useState} from "react";
-import Button from "../../../components/Button";
-import Link from "../../../components/Link";
-import {materialColors} from "../../../utils/colors";
+import {View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, KeyboardAvoidingView} from "react-native";
+import {sizes} from "@utils/sizes";
+import {useContext, useEffect, useState} from "react";
+import Button from "@components/Button";
+import Link from "@components/Link";
+import {materialColors} from "@utils/colors";
 import {useNavigation} from "@react-navigation/native";
-import {AUTH_ROUTES} from "../../../utils/constants";
+import {AUTH_ROUTES} from "@utils/constants";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 
 
 export default function Login() {
   // const {onRegisterClicked} = props
+  const {state, dispatch} = useContext(AuthContext)
   const navigation = useNavigation()
   const [email, setEmail] = useState<string | undefined>(undefined)
   const [pass, setPass] = useState<string | undefined>(undefined)
@@ -24,11 +27,22 @@ export default function Login() {
       setError('Debe completar ambos campos')
       return;
     }
-
+    dispatch({
+      type: AUTH_ACTIONS.LOGIN, payload: {
+        token: "TOKEN",
+        refreshToken: "REFRESH_TOKEN",
+        user: {
+          id: "ID",
+          nombre: "Franco",
+          apellido: "Ruis Dias",
+          email: "franco.ruisdias@uner.edu.ar"
+        }
+      }
+    })
     console.log(email, pass)
   }
 
-  const handleGoToRegister = () =>{
+  const handleGoToRegister = () => {
 
     navigation.navigate(AUTH_ROUTES.REGISTER, {'name': 'register'})
   }
@@ -38,7 +52,7 @@ export default function Login() {
   }, [email, pass])
 
   return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
         <Text style={styles.titulo}>Bienvenido!</Text>
         <TextInput
             keyboardType={"email-address"}
@@ -50,13 +64,12 @@ export default function Login() {
         <View style={styles.passContainer}>
           <TextInput
               secureTextEntry={!showPass}
-              style={styles.input}
               placeholder="contraseña"
               value={pass}
               onChangeText={setPass}
           />
           <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-            <Text>{showPass ? 'Ocultar' : 'Mostrar'}</Text>
+            <MaterialIcons name={showPass ? "visibility-off" : "visibility"} size={24} color="black"/>
           </TouchableOpacity>
         </View>
         <Link link="Me olvide la contraseña" onPress={() => console.log("Me olvide la contraseña")}/>
@@ -65,7 +78,7 @@ export default function Login() {
         <Button onPress={handleLogin} disabled={!isEnabled} title="Iniciar Sesion!"/>
         <View style={styles.divider}/>
         <Link link="Registrarse!" onPress={handleGoToRegister}/>
-      </View>
+      </KeyboardAvoidingView>
   )
 }
 
@@ -81,9 +94,14 @@ const styles = StyleSheet.create({
     color: materialColors.schemes.light.primary,
   },
   passContainer: {
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    borderBottomColor: materialColors.schemes.light.outline,
+    borderBottomWidth: 1,
+    minWidth: 300,
   },
   input: {
     height: 50,
