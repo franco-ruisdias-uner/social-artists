@@ -30,8 +30,8 @@ export default function Root() {
       if (user) {
         dispatch({type: AUTH_ACTIONS.SET_USER, payload: {user}})
         setIsSignedIn(true)
-        SplashScreen.hideAsync();
       }
+      SplashScreen.hideAsync();
     })
   }, []);
   return (

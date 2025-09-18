@@ -1,10 +1,10 @@
-import {View, Text} from "react-native";
+import Places from "@app/tabs/screens/home/places";
+import Contactos from "@app/tabs/screens/home/contactos";
+
 
 export default function HomeScreen() {
-
   return (
-      <View>
-        <Text>Home</Text>
-      </View>
+      <Places/>
   )
 }
+
