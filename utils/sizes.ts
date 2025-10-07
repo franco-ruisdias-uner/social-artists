@@ -1,4 +1,12 @@
 export const sizes = {
-  titulo: 20
+  defaultPadding:{
+    horizontal: 16,
+    vertical: 8
+  },
+  defaultMargin:{
+    horizontal: 16,
+    vertical: 8
+  }
+
 }
 

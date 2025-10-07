@@ -1,4 +1,4 @@
-import HomeScreen from "./home";
-import MyNetworkScreen from './my-network'
+import PostsScreen from "./posts";
+import PlacesScreen from './places'
 
-export {HomeScreen, MyNetworkScreen}
+export {PostsScreen, PlacesScreen}

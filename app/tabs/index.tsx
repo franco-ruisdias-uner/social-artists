@@ -1,13 +1,12 @@
-import {Pressable, Text, TouchableOpacity} from 'react-native';
+import {Pressable} from 'react-native';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {TAB_ROUTES} from "@utils/constants";
-import {HomeScreen, MyNetworkScreen} from "./screens";
+import {PlacesScreen, PostsScreen} from "./screens";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {useContext} from "react";
 import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 import {materialColors} from "@utils/colors";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,24 +23,25 @@ export default function TabsScreen() {
         headerStyle: {backgroundColor: materialColors.schemes.light.surfaceContainer},
         tabBarStyle: {backgroundColor: materialColors.schemes.light.surfaceContainer},
         tabBarActiveTintColor: materialColors.schemes.light.onPrimaryContainer,
-        headerRight: ({tintColor, pressColor}) => (
-            <TouchableOpacity onPress={handleLogout}>
+        headerRight: () => (
+            <Pressable onPress={handleLogout}>
               <MaterialIcons name="logout" size={24} color={materialColors.schemes.light.onPrimaryContainer}/>
-            </TouchableOpacity>
+            </Pressable>
         )
       }}>
-        <Tab.Screen name={TAB_ROUTES.HOME} component={HomeScreen}
+        <Tab.Screen name={TAB_ROUTES.POSTS} component={PostsScreen}
                     options={{
-                      title: "Home",
+                      title: "Posts",
                       tabBarIcon: ({color, size}) => (
-                          <MaterialCommunityIcons name="home" color={color} size={size}/>
+                          <FontAwesome5 name="home" size={size} color={color}/>
                       )
                     }}
         />
-        <Tab.Screen name={TAB_ROUTES.MY_NETWORK} component={MyNetworkScreen} options={{
-          title: "My Network",
+        <Tab.Screen name={TAB_ROUTES.MY_NETWORK} component={PlacesScreen} options={{
+          title: "Lugares",
+          headerShown: false,
           tabBarIcon: ({color, size}) => (
-              <MaterialCommunityIcons name="home" color={color} size={size}/>
+              <FontAwesome5 name="map-marker-alt" size={size} color={color}/>
           )
         }}/>
       </Tab.Navigator>

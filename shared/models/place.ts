@@ -1,30 +1,30 @@
+interface ICoords {
+  lat: number;
+  long: number;
+}
+
 export interface IPlace {
-  id: number
-  title: string
-  imageUrl: string
-  description: string
-  likes: number
-  comments: string[]
-  distance: number
+  id: number;
+  title: string;
+  description: string;
+  coords: ICoords;
+  imageUrl: string;
 }
 
 export class Place implements IPlace {
-  id: number
-  comments: string[];
-  description: string;
-  distance: number;
-  imageUrl: string;
-  likes: number;
+  id: number;
   title: string;
+  description: string;
+  coords: ICoords;
+  imageUrl: string;
 
-  constructor(id: number, title: string, imageUrl: string, description: string, likes: number, comments: string[], distance: number) {
+  constructor(id: number, title: string, description: string, coords: ICoords, imageUrl: string) {
     this.id = id;
     this.title = title;
-    this.imageUrl = imageUrl;
     this.description = description;
-    this.likes = likes;
-    this.comments = comments;
-    this.distance = distance;
+    this.coords = coords;
+    this.imageUrl = imageUrl;
   }
+
 
 }
