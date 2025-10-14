@@ -19,6 +19,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "softwareKeyboardLayoutMode": "pan",
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -26,7 +27,14 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir ${PRODUCT_NAME} para acceder a tu ubicación",
+          "isIosBackgroundLocationEnabled": "Permitir ${PRODUCT_NAME} acceder a la geolocalización en background."
+        }
+      ]
     ]
   }
 }

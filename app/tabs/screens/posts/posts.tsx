@@ -40,7 +40,7 @@ export default function Posts() {
   return (
       <View style={styles.container}>
         <FlatList
-            ListHeaderComponent={() => <PostHeader onPress={handlePostHeaderPress}/>}
+            ListHeaderComponent={() => <PostHeader/>}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh}
                                             tintColor={materialColors.schemes.light.primary}
                                             colors={[materialColors.schemes.light.primary, materialColors.schemes.light.secondary, materialColors.schemes.light.tertiary]}/>}

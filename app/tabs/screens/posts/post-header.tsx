@@ -1,15 +1,20 @@
 import {View, StyleSheet, Text, Pressable} from "react-native";
 import {materialColors} from "@utils/colors";
 import {sizes} from "@utils/sizes";
+import {useNavigation} from "@react-navigation/native";
+import {MODAL_ROUTES} from "@utils/constants";
 
 
 interface Props {
-  onPress: () => void;
+
 }
 
-export function PostHeader(props:Props) {
+export function PostHeader(props: Props) {
+  const navigation = useNavigation();
   return (
-      <Pressable onPress={props.onPress}>
+      <Pressable onPress={() => navigation.navigate(MODAL_ROUTES.CREATE_POST as never)} style={({pressed}) => [
+        {opacity: pressed ? 0.5 : 1.0}
+      ]}>
         <View style={styles.container}>
           <View style={styles.innerContainer}>
             <View style={styles.profilePicture}/>

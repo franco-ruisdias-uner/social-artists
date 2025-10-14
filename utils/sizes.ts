@@ -6,7 +6,8 @@ export const sizes = {
   defaultMargin:{
     horizontal: 16,
     vertical: 8
-  }
+  },
+  titulo: 24,
 
 }
 

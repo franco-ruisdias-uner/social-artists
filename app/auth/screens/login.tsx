@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Pressable, Dimensions
+  Pressable, Dimensions, Platform,
 } from "react-native";
 import Animated, {useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated';
 import * as yup from 'yup';
@@ -17,6 +17,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 import {useFormik} from "formik";
 import {sizes} from "@utils/sizes";
+import {KeyboardAvoidingView, KeyboardController} from "react-native-keyboard-controller";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Required').label('Email'),
@@ -31,6 +32,7 @@ interface IForm {
 const {height} = Dimensions.get('screen');
 const DELAY = 750
 const DURATION = 750
+const offset = {closed: 0, opened: 20};
 
 export default function Login() {
   // const {onRegisterClicked} = props
@@ -58,6 +60,7 @@ export default function Login() {
         }
       })
     }, DURATION * 2);
+    KeyboardController.dismiss();
     formContainerHeight.value = withTiming(0, {duration: DURATION});
     textTop.value = withDelay(DELAY, withTiming(height + 50, {duration: DURATION}));
   }
@@ -94,7 +97,13 @@ export default function Login() {
   });
 
   return (
-      <View style={styles.container}>
+
+      <KeyboardAvoidingView style={{flex: 1}}
+                            contentContainerStyle={styles.container}
+                            keyboardVerticalOffset={50}
+                            behavior={"position"}
+      >
+
         <Animated.Text style={[styles.logo, animatedTextStyles]}>Social Artists</Animated.Text>
         <Animated.View style={[
           styles.formContainer,
@@ -103,10 +112,12 @@ export default function Login() {
           <View style={styles.headerContainer}>
             <Text style={[styles.titulo]}>Bienvenido!</Text>
           </View>
+
           <TextInput
               keyboardType={"email-address"}
               style={styles.input}
               placeholder="email"
+              autoCapitalize={"none"}
               value={formik.values.email}
               onChangeText={value => formik.setFieldValue('email', value)}
           />
@@ -128,9 +139,8 @@ export default function Login() {
             <View style={styles.divider}/>
             <Link link="Registrarse!" onPress={handleGoToRegister}/>
           </View>
-
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
   )
 }
 

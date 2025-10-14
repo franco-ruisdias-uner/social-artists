@@ -3,6 +3,7 @@ import Root from "./app/root";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {AuthProvider} from "./shared/context/AuthContext";
 import * as SplashScreen from 'expo-splash-screen';
+import {KeyboardProvider} from "react-native-keyboard-controller";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -12,12 +13,14 @@ SplashScreen.setOptions({
 export default function App() {
 
   return (
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <AuthProvider>
-            <Root/>
-          </AuthProvider>
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <KeyboardProvider>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AuthProvider>
+              <Root/>
+            </AuthProvider>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </KeyboardProvider>
   );
 }

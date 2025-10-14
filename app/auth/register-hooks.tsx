@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     marginTop: 16,
-    borderBottomColor: materialColors.schemes.light.outline,
+    borderBottomColor: materialColors.schemes.light.outlineVariant,
     borderBottomWidth: 1,
     minWidth: 300,
   },

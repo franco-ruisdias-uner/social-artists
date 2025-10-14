@@ -1,13 +1,13 @@
 import AuthStackScreen from "./auth";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {ROOT_ROUTES} from "@utils/constants";
+import {MODAL_ROUTES, ROOT_ROUTES} from "@utils/constants";
 import {useContext, useEffect, useState} from "react";
 import TabsScreen from "./tabs";
-import {SafeAreaView} from "react-native-safe-area-context";
 import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 import {getUser} from "@utils/secure-store";
 import * as SplashScreen from 'expo-splash-screen';
 import {View} from "react-native";
+import CreatePostModal from "@app/create-post";
 
 const Stack = createNativeStackNavigator()
 
@@ -44,6 +44,9 @@ export default function Root() {
                 :
                 <Stack.Screen name={ROOT_ROUTES.AUTH} component={AuthStackScreen}/>
           }
+          <Stack.Group screenOptions={{presentation: "modal"}}>
+            <Stack.Screen name={MODAL_ROUTES.CREATE_POST} component={CreatePostModal}/>
+          </Stack.Group>
         </Stack.Navigator>
       </View>
   )
