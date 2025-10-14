@@ -34,6 +34,12 @@
           "locationAlwaysAndWhenInUsePermission": "Permitir ${PRODUCT_NAME} para acceder a tu ubicación",
           "isIosBackgroundLocationEnabled": "Permitir ${PRODUCT_NAME} acceder a la geolocalización en background."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir $(PRODUCT_NAME) acceder a la camara."
+        }
       ]
     ]
   }
