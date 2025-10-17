@@ -8,7 +8,6 @@ import {getUser} from "@utils/secure-store";
 import * as SplashScreen from 'expo-splash-screen';
 import {View} from "react-native";
 import CreatePostModal from "@app/create-post";
-
 const Stack = createNativeStackNavigator()
 
 export default function Root() {

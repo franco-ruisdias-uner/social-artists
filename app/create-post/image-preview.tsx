@@ -23,9 +23,8 @@ export default function ImagePreview(props: Props): JSX.Element {
       <Pressable onPress={onPress}
                  style={({pressed}) => [
                    {opacity: pressed ? 0.5 : 1.0}
-                 ]}
-      >
-        <Image source={{uri: imageBase64Source}} style={styles.image}/>
+                 ]}>
+        <Image source={{uri: uri}} style={styles.image}/>
       </Pressable>
   )
 }

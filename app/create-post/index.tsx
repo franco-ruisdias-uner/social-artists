@@ -1,9 +1,6 @@
 import {View, Text, StyleSheet, Pressable, TextInput, ScrollView, Platform} from 'react-native'
 import {materialColors} from "@utils/colors";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import {baseStyles} from "@utils/base-styles";
 import {useEffect, useState} from "react";
-import {useNavigation} from "@react-navigation/native";
 import {sizes} from "@utils/sizes";
 import {
   KeyboardAwareScrollView,
@@ -17,13 +14,15 @@ import PostActions from "@app/create-post/post-actions";
 import PostCamera from "@app/create-post/post-camera";
 import {CameraCapturedPicture} from "expo-camera";
 import ImagePreview from "@app/create-post/image-preview";
+import * as ImagePicker from 'expo-image-picker';
+
 
 export default function CreatePostModal() {
   const insets = useSafeAreaInsets()
   const animatedKeyboard = useReanimatedKeyboardAnimation();
   const [showCamera, setShowCamera] = useState<boolean>(false);
   const [text, setText] = useState<string>()
-  const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>(undefined)
+  const [photo, setPhoto] = useState<{ uri: string, base64: string | undefined } | undefined>(undefined)
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -33,8 +32,41 @@ export default function CreatePostModal() {
 
   const handlePictureTaken = (picture: CameraCapturedPicture) => {
     console.log(`NUEVA FOTO: ${JSON.stringify(picture)}`);
-    setPhoto(picture)
+    setPhoto({uri: picture.uri, base64: picture.base64})
     setShowCamera(false)
+  }
+
+  const handleShowGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsMultipleSelection: false,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setPhoto({uri: result.assets[0].uri, base64: undefined})
+      console.log(result.assets[0].uri);
+    }
+  }
+
+  const launchCamera = () => {
+    console.log("LAUNCHING CAMERA")
+    ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      selectionLimit: 1
+    }).then(result =>{
+      console.log(result);
+
+      if (!result.canceled) {
+        setPhoto({uri: result.assets[0].uri, base64: undefined})
+      }
+    });
+
+
   }
 
   useEffect(() => {
@@ -71,7 +103,7 @@ export default function CreatePostModal() {
                     <ImagePreview onPress={() => setPhoto(undefined)} uri={photo.uri} base64={photo.base64}/>
                   }
                 </KeyboardAwareScrollView>
-                <PostActions showCamera={() => setShowCamera(!showCamera)}/>
+                <PostActions showCameraAlt={launchCamera} showGallery={handleShowGallery} showCamera={() => setShowCamera(!showCamera)}/>
 
               </Animated.View>
         }
