@@ -6,7 +6,8 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView, ActivityIndicator,
+  Alert
 } from "react-native";
 import {useEffect, useState} from "react";
 import Link from "@components/Link";
@@ -17,26 +18,49 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {StackActions, useNavigation, useRoute} from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import axios from "axios";
+import axiosClient from "../../../core/api";
+import {IUser} from "@shared/models";
 
 interface IFormValues {
   nombre: string
   apellido: string
   email: string
-  pass: string
+  password: string
 }
 
 const FormValidationSchema = Yup.object().shape({
   nombre: Yup.string().required('Nombre es requerido'),
   apellido: Yup.string().required('Apellido es requerido'),
   email: Yup.string().email('Email no tiene la forma adecuada').required('Email es requerido'),
-  pass: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('Contraseña es requerida')
+  password: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('Contraseña es requerida')
 })
 export default function Register() {
   const navigation = useNavigation()
   const route = useRoute()
   const [showPass, setShowPass] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [apiError, setApiError] = useState<string | undefined>(undefined)
 
   const handleRegister = (values: IFormValues) => {
+
+    setIsLoading(true)
+    axiosClient.post<IUser>('/auth/register', values)
+        .then(result => {
+          console.log(result.data)
+          Alert.alert("Registro exitoso", "", [
+            {
+              style: 'default',
+              text: 'Ir al login',
+              onPress: () => navigation.goBack()
+            }])
+        })
+        .catch(err => {
+          console.log(err.response.data)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     console.log(values)
   }
 
@@ -45,23 +69,9 @@ export default function Register() {
   }, [route]);
 
 
-  const goToProfileDispatch = () => {
-    navigation.dispatch(StackActions.replace('profile', {user: 'Pedro'}))
-  }
-
-  const goToProfilePush = () => {
-    navigation.dispatch(StackActions.push('Profile', {user: 'Wojtek'}));
-  }
-
-  const goBackPopTo = () => {
-    navigation.dispatch(StackActions.popTo('Profile', {user: 'jane'}));
-  }
-
-
   return (
-      <Formik initialValues={{nombre: '', apellido: '', email: '', pass: ''}}
+      <Formik initialValues={{nombre: '', apellido: '', email: '', password: ''}}
               validationSchema={FormValidationSchema}
-              validateOnMount={true}
               onSubmit={handleRegister}>
         {({values, handleChange, handleSubmit, errors, isValid}) => (
             <KeyboardAvoidingView keyboardVerticalOffset={50} behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -69,6 +79,7 @@ export default function Register() {
               <ScrollView contentContainerStyle={styles.innerContainer}>
                 <Text style={styles.titulo}>Registrarse!</Text>
                 <TextInput
+                    editable={!isLoading}
                     style={[styles.input, errors?.nombre && styles.inputError]}
                     placeholder="Nombre"
                     value={values.nombre}
@@ -76,6 +87,7 @@ export default function Register() {
                 />
                 {errors && <Text style={styles.error}>{errors.nombre}</Text>}
                 <TextInput
+                    editable={!isLoading}
                     style={[styles.input, errors?.apellido && styles.inputError]}
                     placeholder="Apellido"
                     value={values.apellido}
@@ -83,6 +95,8 @@ export default function Register() {
                 />
                 {errors && <Text style={styles.error}>{errors.apellido}</Text>}
                 <TextInput
+                    autoCapitalize={"none"}
+                    editable={!isLoading}
                     keyboardType={"email-address"}
                     style={[styles.input, errors?.email && styles.inputError]}
                     placeholder="Email"
@@ -92,18 +106,28 @@ export default function Register() {
                 {errors && <Text style={styles.error}>{errors.email}</Text>}
                 <View style={[styles.passContainer, errors?.pass && styles.inputError]}>
                   <TextInput
+                      editable={!isLoading}
                       secureTextEntry={!showPass}
                       placeholder="Contraseña"
-                      value={values.pass}
-                      onChangeText={handleChange('pass')}
+                      value={values.password}
+                      onChangeText={handleChange('password')}
                   />
-                  <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-                    <MaterialIcons name={showPass ? "visibility-off" : "visibility"} size={24} color="black"/>
+                  <TouchableOpacity onPress={() => setShowPass(!showPass)} disabled={isLoading}>
+                    <MaterialIcons name={showPass ? "visibility-off" : "visibility"} size={24}
+                                   color={isLoading ? "grey" : "black"}/>
                   </TouchableOpacity>
                 </View>
                 {errors && <Text style={styles.error}>{errors.pass}</Text>}
                 <View style={styles.divider}/>
-                <Button onPress={handleSubmit} disabled={!isValid} title="Registrarse!"/>
+                {
+                    apiError &&
+                  <Text style={styles.error}>{apiError}</Text>
+                }
+                {
+                    isLoading &&
+                  <ActivityIndicator/>
+                }
+                <Button onPress={handleSubmit} disabled={!isValid || isLoading} title="Registrarse!"/>
                 <View style={styles.divider}/>
                 <Link link="Volver al login!" onPress={() => navigation.goBack()}/>
               </ScrollView>

@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Pressable, Dimensions, Platform,
+  Pressable, Dimensions, Platform, ActivityIndicator,
 } from "react-native";
 import Animated, {useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated';
 import * as yup from 'yup';
@@ -18,6 +18,7 @@ import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 import {useFormik} from "formik";
 import {sizes} from "@utils/sizes";
 import {KeyboardAvoidingView, KeyboardController} from "react-native-keyboard-controller";
+import axiosClient from "../../../core/api";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Required').label('Email'),
@@ -32,37 +33,46 @@ interface IForm {
 const {height} = Dimensions.get('screen');
 const DELAY = 750
 const DURATION = 750
-const offset = {closed: 0, opened: 20};
 
 export default function Login() {
-  // const {onRegisterClicked} = props
   const formContainerHeight = useSharedValue(350)
   const textTop = useSharedValue(50)
   const {dispatch} = useContext(AuthContext)
-  const [isToggled, toggle] = useReducer((s) => !s, false);
   const navigation = useNavigation()
   const [showPass, setShowPass] = useState<boolean>(false)
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | undefined>(undefined)
 
   const onSubmit = (values: IForm) => {
     const {password, email} = values
-    setTimeout(() => {
-      dispatch({
-        type: AUTH_ACTIONS.LOGIN, payload: {
-          token: "TOKEN",
-          refreshToken: "REFRESH_TOKEN",
-          user: {
-            id: "ID",
-            nombre: "Franco",
-            apellido: "Ruis Dias",
-            email: "franco.ruisdias@uner.edu.ar"
-          }
-        }
-      })
-    }, DURATION * 2);
-    KeyboardController.dismiss();
-    formContainerHeight.value = withTiming(0, {duration: DURATION});
-    textTop.value = withDelay(DELAY, withTiming(height + 50, {duration: DURATION}));
+    setIsLoading(true)
+    setError(undefined)
+    axiosClient.post('/auth/login', values)
+        .then(res => {
+          console.log(res);
+          dispatch({
+            type: AUTH_ACTIONS.LOGIN, payload: {
+              token: "TOKEN",
+              refreshToken: "REFRESH_TOKEN",
+              user: {
+                id: "ID",
+                nombre: "Franco",
+                apellido: "Ruis Dias",
+                email: "franco.ruisdias@uner.edu.ar"
+              }
+            }
+          });
+          setError(undefined)
+          KeyboardController.dismiss();
+          formContainerHeight.value = withTiming(0, {duration: DURATION});
+          textTop.value = withDelay(DELAY, withTiming(height + 50, {duration: DURATION}));
+        })
+        .catch(err => {
+          setError(err.response.data.message)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
   }
 
   const handleGoToRegister = () => {
@@ -71,8 +81,9 @@ export default function Login() {
 
   const renderPassIcon = () => {
     return (
-        <Pressable onPress={() => setShowPass(!showPass)}>
-          <MaterialIcons name={showPass ? "visibility-off" : "visibility"} size={24} color="black"/>
+        <Pressable onPress={() => setShowPass(!showPass)} disabled={isLoading}>
+          <MaterialIcons name={showPass ? "visibility-off" : "visibility"} size={24}
+                         color={isLoading ? "grey" : "black"}/>
         </Pressable>
     )
   }
@@ -109,11 +120,13 @@ export default function Login() {
           styles.formContainer,
           animatedViewStyles
         ]}>
+
           <View style={styles.headerContainer}>
             <Text style={[styles.titulo]}>Bienvenido!</Text>
           </View>
 
           <TextInput
+              editable={!isLoading}
               keyboardType={"email-address"}
               style={styles.input}
               placeholder="email"
@@ -123,6 +136,7 @@ export default function Login() {
           />
           <View style={styles.passContainer}>
             <TextInput
+                editable={!isLoading}
                 style={{flexGrow: 1}}
                 secureTextEntry={!showPass}
                 placeholder="contraseña"
@@ -133,7 +147,17 @@ export default function Login() {
           </View>
 
           <View style={styles.divider}/>
-          <Button onPress={() => formik.handleSubmit()} disabled={!formik.isValid} title="Iniciar Sesion!"/>
+          {
+              error &&
+            <Text style={styles.error}>{error}</Text>
+          }
+          {
+              isLoading &&
+            <ActivityIndicator/>
+          }
+          <View style={styles.divider}/>
+          <Button onPress={() => formik.handleSubmit()} disabled={!formik.isValid || isLoading}
+                  title="Iniciar Sesion!"/>
           <View style={styles.linksContainer}>
             <Link link="Me olvide la contraseña" onPress={() => console.log("Me olvide la contraseña")}/>
             <View style={styles.divider}/>
