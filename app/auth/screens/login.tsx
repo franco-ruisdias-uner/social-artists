@@ -3,11 +3,11 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Pressable, Dimensions, Platform, ActivityIndicator,
+  Pressable, Dimensions, ActivityIndicator,
 } from "react-native";
 import Animated, {useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated';
 import * as yup from 'yup';
-import {useContext, useReducer, useState} from "react";
+import {useContext, useState} from "react";
 import Button from "@components/Button";
 import Link from "@components/Link";
 import {materialColors} from "@utils/colors";
@@ -18,7 +18,8 @@ import {AUTH_ACTIONS, AuthContext} from "@shared/context/AuthContext";
 import {useFormik} from "formik";
 import {sizes} from "@utils/sizes";
 import {KeyboardAvoidingView, KeyboardController} from "react-native-keyboard-controller";
-import axiosClient from "../../../core/api";
+import {LoginResponse} from "@shared/interfaces";
+import axiosClient from "@core/api";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Required').label('Email'),
@@ -44,22 +45,16 @@ export default function Login() {
   const [error, setError] = useState<string | undefined>(undefined)
 
   const onSubmit = (values: IForm) => {
-    const {password, email} = values
     setIsLoading(true)
     setError(undefined)
-    axiosClient.post('/auth/login', values)
+    axiosClient.post<LoginResponse>('/auth/login', values)
         .then(res => {
-          console.log(res);
+          const {data} = res
           dispatch({
             type: AUTH_ACTIONS.LOGIN, payload: {
-              token: "TOKEN",
-              refreshToken: "REFRESH_TOKEN",
-              user: {
-                id: "ID",
-                nombre: "Franco",
-                apellido: "Ruis Dias",
-                email: "franco.ruisdias@uner.edu.ar"
-              }
+              token: data.access_token,
+              refreshToken: data.refresh_token,
+              user: data.user
             }
           });
           setError(undefined)

@@ -2,7 +2,7 @@ import AuthContext from "./auth-context";
 import {useReducer} from "react";
 import {IUser} from "@shared/models";
 import {AUTH_ACTIONS} from "@shared/context/AuthContext/enums";
-import {deleteUser, setUser} from "@utils/secure-store";
+import {deleteItem, setTokens, setUser, STORAGE_KEYS} from "@utils/secure-store";
 
 interface Action {
   type: AUTH_ACTIONS
@@ -30,6 +30,7 @@ const AuthProvider = (props: any) => {
     switch (action.type) {
       case AUTH_ACTIONS.LOGIN:
         setUser(payload.user);
+        setTokens({jwtToken: payload.token, jwtRefreshToken: payload.refreshToken});
         return {
           ...prevState,
           user: payload.user,
@@ -37,7 +38,8 @@ const AuthProvider = (props: any) => {
           refreshToken: payload.refreshToken,
         }
       case AUTH_ACTIONS.LOGOUT:
-        deleteUser();
+        deleteItem(STORAGE_KEYS.USER);
+        deleteItem(STORAGE_KEYS.TOKENS);
         return initialState
       default:
         return prevState

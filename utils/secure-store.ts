@@ -1,14 +1,14 @@
 import * as SecureStore from "expo-secure-store";
 import {IUser} from "@shared/models";
+import {SecureStoreToken} from "@shared/interfaces";
 
 const STORAGE_NAME = "SOCIAL_ARTISTS_"
 
-export const STORAGE_KEYS = {
-  JWT_TOKEN: 'jwtToken',
-  USER: 'user',
-  JWT_REFRESH_TOKEN: 'jwtRefreshToken',
-  DEVICE_ID: 'deviceId'
-};
+export enum STORAGE_KEYS {
+  TOKENS = 'tokens',
+  USER = 'user',
+  DEVICE_ID = 'deviceId'
+}
 
 const _setItem = (key: any, value: any, options?: any) =>
     SecureStore.setItemAsync(`${STORAGE_NAME}${key}`, value, options);
@@ -23,6 +23,14 @@ const getUser = async () => {
   return user ? JSON.parse(user) : null;
 }
 
-const deleteUser = () => _deleteItem(STORAGE_KEYS.USER);
+const deleteItem = (key: STORAGE_KEYS) => _deleteItem(key);
 
-export {setUser, getUser, deleteUser}
+const setTokens = (tokens: SecureStoreToken) => _setItem(STORAGE_KEYS.TOKENS, JSON.stringify(tokens));
+
+
+const getTokens = async (): Promise<SecureStoreToken | undefined> => {
+  const tokens = await _getItem(STORAGE_KEYS.TOKENS);
+  return tokens ? JSON.parse(tokens) : undefined;
+}
+
+export {setUser, getUser, deleteItem, setTokens, getTokens}
