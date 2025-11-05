@@ -4,7 +4,7 @@ import {useState} from "react";
 import Map from "@app/tabs/screens/places/map";
 import {PLACES} from "@utils/dummy-data";
 import MapListSwitcher from "@app/tabs/screens/places/map-list-switcher";
-import {mapListType} from "@utils/enums";
+import {mapListType} from "@shared/enums/map-list-type";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {IPlace} from "@shared/models";
 

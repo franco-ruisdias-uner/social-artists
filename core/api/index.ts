@@ -23,9 +23,6 @@ axiosClient.interceptors.request.use(async (config) => {
   if (!tokens) {
     return config;
   }
-  console.log('----------TOKEN----------')
-  console.log(tokens.jwtToken)
-  console.log('----------TOKEN----------')
   config.headers = AxiosHeaders.from({
     ...config.headers,
     'Authorization': `Bearer ${tokens.jwtToken}`
@@ -45,7 +42,7 @@ axiosClient.interceptors.response.use(function onFulfilled(response) {
   if (!error.response?.data) {
     return Promise.reject(error);
   }
-  console.log(error.response.data)
+
   const {data} = error.response;
   if (!data.statusCode || data.statusCode !== 401) {
     return Promise.reject(error);
@@ -55,7 +52,7 @@ axiosClient.interceptors.response.use(function onFulfilled(response) {
   if (!tokens?.jwtRefreshToken) {
     return Promise.reject(error);
   }
-  console.log(tokens.jwtRefreshToken)
+
   const response = await axiosClient.post<LoginResponse>('/auth/refresh-token', {refreshToken: tokens.jwtRefreshToken})
   if (!response.data) {
     return Promise.reject(error);

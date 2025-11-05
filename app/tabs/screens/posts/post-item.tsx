@@ -19,14 +19,14 @@ export default function PostItem(props: Props) {
 
 
   const getTextBody = (): string => {
-    return showingMore ? item.description : `${item.description.slice(0, 100)}...`
+    return showingMore ? item.text : `${item.text.slice(0, 100)}...`
   }
 
   return (
       <View style={styles.container}>
         <View style={styles.userContainer}>
           <View style={styles.profilePicture}></View>
-          <Text style={styles.userName}>{item.user}</Text>
+          <Text style={styles.userName}>{`${item.user.nombre} ${item.user.apellido}`}</Text>
         </View>
         <View style={styles.postContainer}>
           <Text style={styles.postBody}>{getTextBody()}</Text>
@@ -35,12 +35,15 @@ export default function PostItem(props: Props) {
               <Text style={styles.showMoreText}>{showingMore ? 'Ver menos' : 'Ver mas'}</Text>
             </Pressable>
           </View>
+          {
+              item.imageUrl &&
+            <Image style={styles.image}
+                   placeholder={{blurhash}}
+                   contentFit="cover"
+                   transition={1000}
+                   source={{uri: item.imageUrl}}/>
+          }
 
-          <Image style={styles.image}
-                 placeholder={{blurhash}}
-                 contentFit="cover"
-                 transition={1000}
-                 source={{uri: item.imageUrl}}/>
         </View>
         <View style={styles.likesAndCommentsContainer}>
           <Text style={styles.likesAndCommentsText}>{item.comments.length} comentarios</Text>

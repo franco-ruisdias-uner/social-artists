@@ -1,27 +1,29 @@
+import {User} from "./user";
+
 export interface IPost {
-  id: number
-  user: string
+  _id: string
+  user: User
   imageUrl: string
-  description: string
+  text: string
   likes: number
   comments: string[]
   distance: number
 }
 
 export class Post implements IPost {
-  id: number
+  _id: string
   comments: string[];
-  description: string;
+  text: string;
   distance: number;
   imageUrl: string;
   likes: number;
-  user: string;
+  user: User;
 
-  constructor(id: number, user: string, imageUrl: string, description: string, likes: number, comments: string[], distance: number) {
-    this.id = id;
+  constructor(_id: string, user: User, imageUrl: string, description: string, likes: number, comments: string[], distance: number) {
+    this._id = _id;
     this.user = user;
     this.imageUrl = imageUrl;
-    this.description = description;
+    this.text = description;
     this.likes = likes;
     this.comments = comments;
     this.distance = distance;

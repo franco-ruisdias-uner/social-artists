@@ -69,7 +69,7 @@ export default function Posts() {
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh}
                                             tintColor={materialColors.schemes.light.primary}
                                             colors={[materialColors.schemes.light.primary, materialColors.schemes.light.secondary, materialColors.schemes.light.tertiary]}/>}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item._id}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => {
               if (loading) {

@@ -7,24 +7,29 @@ import {sizes} from "@utils/sizes";
 
 interface Props {
   postEnabled: boolean;
+  onPostPressed: () => void;
 }
 
 
 export default function PostHeader(props: Props) {
-  const {postEnabled} = props;
+  const {postEnabled, onPostPressed} = props;
   const navigation = useNavigation()
   return (
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={({pressed}) => [
-          {opacity: pressed ? 0.5 : 1.0}
-        ]}>
+        <Pressable
+            onPress={() => navigation.goBack()}
+            style={({pressed}) => [
+              {opacity: pressed ? 0.5 : 1.0}
+            ]}>
           <MaterialIcons name={'close'} size={24} color={materialColors.schemes.light.onSurface}/>
         </Pressable>
         <Text style={[baseStyles.textBase, styles.headerTitle]}>Crear
           Post</Text>
-        <Pressable style={({pressed}) => [
-          {opacity: pressed ? 0.5 : 1.0}
-        ]}>
+        <Pressable
+            onPress={onPostPressed}
+            style={({pressed}) => [
+              {opacity: pressed ? 0.5 : 1.0}
+            ]}>
           <Text style={[baseStyles.textBase, postEnabled && styles.headerRight]}>Postear</Text>
         </Pressable>
       </View>

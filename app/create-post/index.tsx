@@ -15,12 +15,20 @@ import PostCamera from "@app/create-post/post-camera";
 import {CameraCapturedPicture} from "expo-camera";
 import ImagePreview from "@app/create-post/image-preview";
 import * as ImagePicker from 'expo-image-picker';
+import {uploadImage} from "@shared/helpers/upload-image";
+import axiosClient from "@core/api";
+import {useNavigation} from "@react-navigation/native";
+import Toast from 'react-native-toast-message'
 
+interface CreatePostBody {
+  text: string;
+  imageUrl?: string;
+}
 
 export default function CreatePostModal() {
   const insets = useSafeAreaInsets()
   const animatedKeyboard = useReanimatedKeyboardAnimation();
-  const [showCamera, setShowCamera] = useState<boolean>(false);
+  const navigation = useNavigation()
   const [text, setText] = useState<string>()
   const [photo, setPhoto] = useState<{ uri: string, base64: string | undefined } | undefined>(undefined)
 
@@ -29,12 +37,6 @@ export default function CreatePostModal() {
       paddingBottom: withTiming((animatedKeyboard.height.value * -1) === 0 ? insets.bottom : (animatedKeyboard.height.value * -1), {duration: 0}),
     };
   });
-
-  const handlePictureTaken = (picture: CameraCapturedPicture) => {
-    console.log(`NUEVA FOTO: ${JSON.stringify(picture)}`);
-    setPhoto({uri: picture.uri, base64: picture.base64})
-    setShowCamera(false)
-  }
 
   const handleShowGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,28 +48,79 @@ export default function CreatePostModal() {
     });
     if (!result.canceled) {
       setPhoto({uri: result.assets[0].uri, base64: undefined})
-      console.log(result.assets[0].uri);
     }
   }
 
   const launchCamera = () => {
-    console.log("LAUNCHING CAMERA")
     ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
       selectionLimit: 1
-    }).then(result =>{
+    }).then(result => {
       console.log(result);
 
       if (!result.canceled) {
         setPhoto({uri: result.assets[0].uri, base64: undefined})
       }
     });
-
-
   }
+
+  const createPost = async (imageUrl: string | undefined) => {
+    if (!text) {
+      return
+    }
+    const createPost: CreatePostBody = {text: text}
+    if (imageUrl) {
+      createPost.imageUrl = imageUrl
+    }
+    console.log(createPost)
+    try {
+      const response = await axiosClient.post('/posts', createPost)
+      console.log(response.data);
+      Toast.show({
+        type: 'success',
+        text1: 'Post creado exitosamente',
+      })
+      setText(undefined);
+      setPhoto(undefined);
+      navigation.goBack();
+    } catch (error: any) {
+
+      Toast.show({
+        type: 'error',
+        text1: 'Error al crear el post',
+        text2: error.response?.data?.message
+      })
+    }
+  }
+
+
+  const handleOnPost = async () => {
+    if (!photo) {
+      await createPost(undefined)
+      return;
+    }
+    await uploadImage("posts", photo?.uri || "", {
+      onSuccess: (downloadURL) => {
+        createPost(downloadURL)
+        // console.log(downloadURL)
+      },
+      onError: (error) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Error al subir la imagen',
+          text2: error.message
+        })
+        console.log(error)
+      },
+      onProgress: progress => {
+        console.log(`Progreso: ${progress}`)
+      }
+    })
+  }
+
 
   useEffect(() => {
     KeyboardController.setFocusTo("next")
@@ -75,38 +128,34 @@ export default function CreatePostModal() {
 
   return (
       <View style={{flex: 1}}>
-        {
-          showCamera ?
-              <PostCamera pictureTaken={handlePictureTaken} closeCamera={() => setShowCamera(false)}/>
-              :
-              <Animated.View style={[
-                styles.container,
-                animatedStyle
-              ]}>
-                <PostHeader postEnabled={!!text}/>
-                <KeyboardAwareScrollView
-                    bottomOffset={insets.top + 30}
-                    keyboardShouldPersistTaps={"never"}
+        <Animated.View style={[
+          styles.container,
+          animatedStyle
+        ]}>
+          <PostHeader postEnabled={!!text} onPostPressed={handleOnPost}/>
+          <KeyboardAwareScrollView
+              bottomOffset={insets.top + 30}
+              keyboardShouldPersistTaps={"never"}
 
-                    overScrollMode={"auto"}>
-                  <TextInput
-                      autoFocus={true}
-                      placeholder="Di algo"
-                      value={text}
-                      onChangeText={setText}
-                      multiline={true}
-                      style={styles.input}
-                      focusable={true}
-                  />
-                  {
-                      photo &&
-                    <ImagePreview onPress={() => setPhoto(undefined)} uri={photo.uri} base64={photo.base64}/>
-                  }
-                </KeyboardAwareScrollView>
-                <PostActions showCameraAlt={launchCamera} showGallery={handleShowGallery} showCamera={() => setShowCamera(!showCamera)}/>
+              overScrollMode={"auto"}>
+            <TextInput
+                autoFocus={true}
+                placeholder="Di algo"
+                value={text}
+                onChangeText={setText}
+                multiline={true}
+                style={styles.input}
+                focusable={true}
+            />
+            {
+                photo &&
+              <ImagePreview onPress={() => setPhoto(undefined)} uri={photo.uri}/>
+            }
+          </KeyboardAwareScrollView>
+          <PostActions showGallery={handleShowGallery}
+                       showCamera={launchCamera}/>
 
-              </Animated.View>
-        }
+        </Animated.View>
 
       </View>
   )

@@ -2,17 +2,15 @@ import {Alert, Pressable, StyleSheet, View} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {materialColors} from "@utils/colors";
 import {sizes} from "@utils/sizes";
-// import {useCameraPermissions} from "expo-camera";
 import {useMediaLibraryPermissions, useCameraPermissions} from "expo-image-picker";
 
 interface Props {
   showCamera: () => void;
   showGallery: () => void;
-  showCameraAlt: () => void;
 }
 
 export default function PostActions(props: Props) {
-  const {showCamera, showGallery, showCameraAlt} = props;
+  const {showCamera, showGallery} = props;
   const [cameraPermission, requestCameraPermission] = useCameraPermissions()
   const [mediaLibraryPermission, requestMediaLibraryPermission] = useMediaLibraryPermissions()
 
@@ -29,50 +27,29 @@ export default function PostActions(props: Props) {
     }
   }
 
-  const handleShowCameraAlt = () => {
-
-    console.log(cameraPermission)
+  const handleShowCamera = () => {
     if (!cameraPermission?.granted) {
 
       requestCameraPermission().then(cameraPermission => {
         if (cameraPermission.granted) {
-          showCameraAlt()
+          showCamera()
         }
       })
     } else {
 
-      showCameraAlt()
-    }
-  }
-
-  const handleShowCamera = () => {
-    if (!cameraPermission?.granted) {
-      requestCameraPermission().then(result => {
-        if (result.granted) {
-          showCamera();
-        } else{
-
-        }
-      });
-    } else {
-      showCamera();
+      showCamera()
     }
   }
 
 
   return (
       <View style={styles.actionsContainer}>
-        <Pressable onPress={handleShowCamera} style={({pressed}) => [
-          {opacity: pressed ? 0.5 : 1.0}
-        ]}>
-          <MaterialIcons name="camera-alt" size={24} color={materialColors.schemes.light.onSurface}/>
-        </Pressable>
         <Pressable onPress={handleShowGallery} style={({pressed}) => [
           {opacity: pressed ? 0.5 : 1.0}
         ]}>
           <MaterialIcons name="image" size={24} color={materialColors.schemes.light.onSurface}/>
         </Pressable>
-        <Pressable onPress={handleShowCameraAlt} style={({pressed}) => [
+        <Pressable onPress={handleShowCamera} style={({pressed}) => [
           {opacity: pressed ? 0.5 : 1.0}
         ]}>
           <MaterialIcons name="camera" size={24} color={materialColors.schemes.light.onSurface}/>

@@ -2,7 +2,7 @@ import {Pressable, StyleSheet, Text, View} from "react-native";
 import {materialColors} from "@utils/colors";
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {sizes} from "@utils/sizes";
-import {mapListType} from "@utils/enums";
+import {mapListType} from "@shared/enums";
 
 
 interface Props {
