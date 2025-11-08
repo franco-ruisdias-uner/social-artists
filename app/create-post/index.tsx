@@ -1,24 +1,25 @@
-import {View, Text, StyleSheet, Pressable, TextInput, ScrollView, Platform} from 'react-native'
-import {materialColors} from "@utils/colors";
-import {useEffect, useState} from "react";
-import {sizes} from "@utils/sizes";
+import { Text, StyleSheet, TextInput } from 'react-native'
+import { materialColors } from "@utils/colors";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { sizes } from "@utils/sizes";
 import {
   KeyboardAwareScrollView,
   KeyboardController,
   useReanimatedKeyboardAnimation
 } from "react-native-keyboard-controller";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import PostHeader from "@app/create-post/post-header";
 import PostActions from "@app/create-post/post-actions";
-import PostCamera from "@app/create-post/post-camera";
-import {CameraCapturedPicture} from "expo-camera";
 import ImagePreview from "@app/create-post/image-preview";
 import * as ImagePicker from 'expo-image-picker';
-import {uploadImage} from "@shared/helpers/upload-image";
+import { uploadImage } from "@shared/helpers/upload-image";
 import axiosClient from "@core/api";
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Toast from 'react-native-toast-message'
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ScheduleSheet from "@app/create-post/schedule-sheet";
+
 
 interface CreatePostBody {
   text: string;
@@ -31,12 +32,15 @@ export default function CreatePostModal() {
   const navigation = useNavigation()
   const [text, setText] = useState<string>()
   const [photo, setPhoto] = useState<{ uri: string, base64: string | undefined } | undefined>(undefined)
+  const [bottomSheetOpened, setBottomSheetOpened] = useState<boolean>(false);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      paddingBottom: withTiming((animatedKeyboard.height.value * -1) === 0 ? insets.bottom : (animatedKeyboard.height.value * -1), {duration: 0}),
+      paddingBottom: withTiming((animatedKeyboard.height.value * -1) === 0 ? insets.bottom : (animatedKeyboard.height.value * -1), { duration: 0 }),
     };
   });
+
+
 
   const handleShowGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -47,7 +51,7 @@ export default function CreatePostModal() {
       quality: 1,
     });
     if (!result.canceled) {
-      setPhoto({uri: result.assets[0].uri, base64: undefined})
+      setPhoto({ uri: result.assets[0].uri, base64: undefined })
     }
   }
 
@@ -62,7 +66,7 @@ export default function CreatePostModal() {
       console.log(result);
 
       if (!result.canceled) {
-        setPhoto({uri: result.assets[0].uri, base64: undefined})
+        setPhoto({ uri: result.assets[0].uri, base64: undefined })
       }
     });
   }
@@ -71,7 +75,7 @@ export default function CreatePostModal() {
     if (!text) {
       return
     }
-    const createPost: CreatePostBody = {text: text}
+    const createPost: CreatePostBody = { text: text }
     if (imageUrl) {
       createPost.imageUrl = imageUrl
     }
@@ -87,7 +91,6 @@ export default function CreatePostModal() {
       setPhoto(undefined);
       navigation.goBack();
     } catch (error: any) {
-
       Toast.show({
         type: 'error',
         text1: 'Error al crear el post',
@@ -127,37 +130,42 @@ export default function CreatePostModal() {
   }, []);
 
   return (
-      <View style={{flex: 1}}>
-        <Animated.View style={[
-          styles.container,
-          animatedStyle
-        ]}>
-          <PostHeader postEnabled={!!text} onPostPressed={handleOnPost}/>
-          <KeyboardAwareScrollView
-              bottomOffset={insets.top + 30}
-              keyboardShouldPersistTaps={"never"}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Animated.View style={[
+        styles.container,
+        animatedStyle
+      ]}>
+        <PostHeader />
+        <KeyboardAwareScrollView
+          bottomOffset={insets.top + 30}
+          keyboardShouldPersistTaps={"never"}
 
-              overScrollMode={"auto"}>
-            <TextInput
-                autoFocus={true}
-                placeholder="Di algo"
-                value={text}
-                onChangeText={setText}
-                multiline={true}
-                style={styles.input}
-                focusable={true}
-            />
-            {
-                photo &&
-              <ImagePreview onPress={() => setPhoto(undefined)} uri={photo.uri}/>
-            }
-          </KeyboardAwareScrollView>
-          <PostActions showGallery={handleShowGallery}
-                       showCamera={launchCamera}/>
+          overScrollMode={"auto"}>
+          <TextInput
+            autoFocus={true}
+            placeholder="Di algo"
+            value={text}
+            onChangeText={setText}
+            multiline={true}
+            style={styles.input}
+            focusable={true}
+          />
+          {
+            photo &&
+            <ImagePreview onPress={() => setPhoto(undefined)} uri={photo.uri} />
+          }
+        </KeyboardAwareScrollView>
+        <PostActions
+          showScheduleSheet={setBottomSheetOpened}
+          postEnabled={!!text}
+          onPostPressed={handleOnPost}
+          showGallery={handleShowGallery}
+          showCamera={launchCamera} />
 
-        </Animated.View>
+      </Animated.View>
+      <ScheduleSheet hidden={!bottomSheetOpened} onScheduledDate={console.log}/>
 
-      </View>
+    </GestureHandlerRootView>
   )
 }
 
@@ -174,5 +182,6 @@ const styles = StyleSheet.create({
   },
   photoPlaceHolder: {
     height: 200, width: '100%', backgroundColor: materialColors.schemes.light.secondary
-  }
+  },
+
 })

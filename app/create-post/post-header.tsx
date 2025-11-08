@@ -6,13 +6,11 @@ import {useNavigation} from "@react-navigation/native";
 import {sizes} from "@utils/sizes";
 
 interface Props {
-  postEnabled: boolean;
-  onPostPressed: () => void;
+  
 }
 
 
 export default function PostHeader(props: Props) {
-  const {postEnabled, onPostPressed} = props;
   const navigation = useNavigation()
   return (
       <View style={styles.header}>
@@ -25,13 +23,7 @@ export default function PostHeader(props: Props) {
         </Pressable>
         <Text style={[baseStyles.textBase, styles.headerTitle]}>Crear
           Post</Text>
-        <Pressable
-            onPress={onPostPressed}
-            style={({pressed}) => [
-              {opacity: pressed ? 0.5 : 1.0}
-            ]}>
-          <Text style={[baseStyles.textBase, postEnabled && styles.headerRight]}>Postear</Text>
-        </Pressable>
+        
       </View>
   )
 }
@@ -49,5 +41,4 @@ const styles = StyleSheet.create({
     borderBottomColor: materialColors.schemes.light.outlineVariant,
   },
   headerTitle: {fontWeight: 'bold', textAlign: 'center', alignSelf: 'center'},
-  headerRight: {color: materialColors.schemes.light.primary},
 })

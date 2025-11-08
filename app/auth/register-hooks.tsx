@@ -1,10 +1,10 @@
-import {View, Text, TextInput, TouchableOpacity, StyleSheet} from "react-native";
-import {useCallback, useState} from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { useCallback, useState } from "react";
 import Link from "../../components/Link";
 import Button from "../../components/Button";
-import {sizes} from "../../utils";
-import {materialColors} from "../../utils/colors";
-import {useForm, Controller,} from "react-hook-form"
+import { sizes } from "../../utils";
+import { materialColors } from "../../utils/colors";
+import { useForm, Controller, } from "react-hook-form"
 
 interface IProps {
   onLoginClicked: () => void
@@ -19,12 +19,12 @@ interface IFormValues {
 const regex = /.*@.*/gm;
 
 export default function RegisterHooks(props: IProps) {
-  const {onLoginClicked} = props
+  const { onLoginClicked } = props
   const [showPass, setShowPass] = useState<boolean>(false)
   const {
     control,
     handleSubmit,
-    formState: {errors, isValid},
+    formState: { errors, isValid },
   } = useForm({
     defaultValues: {
       nombre: '',
@@ -39,65 +39,65 @@ export default function RegisterHooks(props: IProps) {
   }
 
   return (
-      <View style={styles.container}>
-        <Text style={styles.titulo}>Registrarse!</Text>
-        <Controller control={control}
-                    rules={{
-                      required: true
-                    }}
-                    render={({field: {onChange, onBlur, value}}) => (
-                        <TextInput
-                            style={[styles.input, errors?.nombre && styles.inputError]}
-                            placeholder="Nombre"
-                            onBlur={onBlur}
-                            value={value}
-                            onChangeText={onChange}
-                        />
-                    )} name={'nombre'}/>
-        {errors.nombre && <Text style={styles.error}>{errors.nombre?.message}</Text>}
-        <Controller control={control} render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-                style={[styles.input, errors?.nombre && styles.inputError]}
-                placeholder="Apellido"
-                onBlur={onBlur}
-                value={value}
-                onChangeText={onChange}
-            />
-        )} name={'apellido'}/>
-        {errors.apellido && <Text style={styles.error}>{errors.apellido?.message}</Text>}
-        <Controller control={control}
-                    render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-                keyboardType={"email-address"}
-                style={[styles.input, errors?.nombre && styles.inputError]}
-                placeholder="email"
-                onBlur={onBlur}
-                value={value}
-                onChangeText={onChange}
-            />
-        )} name={'email'}/>
-        {errors.email && <Text style={styles.error}>{errors.email?.message}</Text>}
-        <View style={styles.passContainer}>
-          <Controller control={control} render={({field: {onChange, onBlur, value}}) => (
-              <TextInput
-                  secureTextEntry={!showPass}
-                  style={[styles.input, errors?.nombre && styles.inputError]}
-                  placeholder="Contraseña"
-                  onBlur={onBlur}
-                  value={value}
-                  onChangeText={onChange}
-              />
-          )} name={'pass'}/>
-          <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-            <Text>{showPass ? 'Ocultar' : 'Mostrar'}</Text>
-          </TouchableOpacity>
-        </View>
-        {errors.pass && <Text style={styles.error}>{errors.pass?.message}</Text>}
-        <View style={styles.divider}/>
-        <Button onPress={handleSubmit(handleRegister)} disabled={!isValid} title="Registrarse!"/>
-        <View style={styles.divider}/>
-        <Link link="Volver al login!" onPress={onLoginClicked}/>
+    <View style={styles.container}>
+      <Text style={styles.titulo}>Registrarse!</Text>
+      <Controller control={control}
+        rules={{
+          required: true
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={[styles.input, errors?.nombre && styles.inputError]}
+            placeholder="Nombre"
+            onBlur={onBlur}
+            value={value}
+            onChangeText={onChange}
+          />
+        )} name={'nombre'} />
+      {errors.nombre && <Text style={styles.error}>{errors.nombre?.message}</Text>}
+      <Controller control={control} render={({ field: { onChange, onBlur, value } }) => (
+        <TextInput
+          style={[styles.input, errors?.nombre && styles.inputError]}
+          placeholder="Apellido"
+          onBlur={onBlur}
+          value={value}
+          onChangeText={onChange}
+        />
+      )} name={'apellido'} />
+      {errors.apellido && <Text style={styles.error}>{errors.apellido?.message}</Text>}
+      <Controller control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            keyboardType={"email-address"}
+            style={[styles.input, errors?.nombre && styles.inputError]}
+            placeholder="email"
+            onBlur={onBlur}
+            value={value}
+            onChangeText={onChange}
+          />
+        )} name={'email'} />
+      {errors.email && <Text style={styles.error}>{errors.email?.message}</Text>}
+      <View style={styles.passContainer}>
+        <Controller control={control} render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            secureTextEntry={!showPass}
+            style={[styles.input, errors?.nombre && styles.inputError]}
+            placeholder="Contraseña"
+            onBlur={onBlur}
+            value={value}
+            onChangeText={onChange}
+          />
+        )} name={'pass'} />
+        <TouchableOpacity onPress={() => setShowPass(!showPass)}>
+          <Text>{showPass ? 'Ocultar' : 'Mostrar'}</Text>
+        </TouchableOpacity>
       </View>
+      {errors.pass && <Text style={styles.error}>{errors.pass?.message}</Text>}
+      <View style={styles.divider} />
+      <Button onPress={handleSubmit(handleRegister)} disabled={!isValid} title="Registrarse!" />
+      <View style={styles.divider} />
+      <Link link="Volver al login!" onPress={onLoginClicked} />
+    </View>
   )
 }
 
