@@ -23,7 +23,7 @@ export default function PostHeader(props: Props) {
         </Pressable>
         <Text style={[baseStyles.textBase, styles.headerTitle]}>Crear
           Post</Text>
-        
+        <View/>
       </View>
   )
 }

@@ -48,6 +48,15 @@
         {
           "cameraPermission": "Permitir $(PRODUCT_NAME) acceder a la camara."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": [],
+          "mode": "production"
+        }
       ]
     ]
   }
